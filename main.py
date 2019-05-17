@@ -1,14 +1,14 @@
 # Import libraries
-from scripts import pre_processing as prep
 import pandas as pd
 
 # Import the data and read from Excel file
-df = pd.read_csv('banking_campaign.csv')
+df = pd.read_csv('banking_training.csv')
 
 # Create a combined data frame for output
 output_df = pd.DataFrame({
-    # 'campaign.equi-width': binned_equi_width_campaign,
+    'row ID': df['row ID'],
+    'Final_Y': df['Final_Y'],
 })
 
-# Merge and write the data frame to an excel file
-prep.write_to_xls(pd.concat([df, output_df], axis=1, sort=False))
+# Write the data frame to a csv file
+output_df.to_csv('output.csv', index=False)
