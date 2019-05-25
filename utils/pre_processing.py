@@ -154,6 +154,43 @@ def binarise_y_n(df):
     # Return the results as a list
     return binarised_y_n_list
 
+def binarise_education(df):
+    # Isolate the values from the data frame
+    df = df.values
+
+    # Binarise the categories
+    binarised = preprocessing.LabelBinarizer().fit_transform(df)
+
+    # Format the binarised items into 11 columns
+    binarised_basic_4y_list = []
+    binarised_basic_6y_list = []
+    binarised_basic_9y_list = []
+    binarised_high_school_list = []
+    binarised_illiterate_list = []
+    binarised_professional_course_list = []
+    binarised_university_degree_list = []
+    binarised_unknown_list = []
+    for i in range(len(binarised)):
+        item = binarised[i]
+        binarised_basic_4y_list.append(item[0])
+        binarised_basic_6y_list.append(item[1])
+        binarised_basic_9y_list.append(item[2])
+        binarised_high_school_list.append(item[3])
+        binarised_illiterate_list.append(item[4])
+        binarised_professional_course_list.append(item[5])
+        binarised_university_degree_list.append(item[6])
+        binarised_unknown_list.append(item[7])
+
+    # Return the results as a dictionary
+    return {'basic.4y': binarised_basic_4y_list,
+            'basic.6y': binarised_basic_6y_list,
+            'basic.9y': binarised_basic_9y_list,
+            'high.school': binarised_high_school_list,
+            'illiterate': binarised_illiterate_list,
+            'professional.course': binarised_professional_course_list,
+            'university.degree': binarised_university_degree_list,
+            'unknown': binarised_unknown_list}
+
 
 def binarise_job(df):
     # Isolate the values from the data frame
