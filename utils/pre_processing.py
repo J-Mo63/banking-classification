@@ -138,21 +138,28 @@ def binarise_contact(df):
     return binarised_tel_cell_list
 
 
-def binarise_y_n(df):
+def binarise_y_n_u(df):
     # Isolate the values from the data frame
     df = df.values
 
-    # Format the binarised items into one boolean column
-    binarised_y_n_list = []
-    for i in range(len(df)):
-        item = df[i]
-        if item == 'yes':
-            binarised_y_n_list.append(1)
-        else:
-            binarised_y_n_list.append(0)
+    # Binarise the categories
+    binarised = preprocessing.LabelBinarizer().fit_transform(df)
 
-    # Return the results as a list
-    return binarised_y_n_list
+    # Format the binarised items into three columns
+    binarised_no_list = []
+    binarised_unknown_list = []
+    binarised_yes_list = []
+    for i in range(len(binarised)):
+        item = binarised[i]
+        binarised_no_list.append(item[0])
+        binarised_unknown_list.append(item[1])
+        binarised_yes_list.append(item[2])
+
+    # Return the results as a dictionary
+    return {'yes': binarised_yes_list,
+            'no': binarised_no_list,
+            'unknown': binarised_unknown_list}
+
 
 def binarise_education(df):
     # Isolate the values from the data frame
