@@ -7,8 +7,19 @@ df_train = pd.read_csv('banking_training.csv')
 df_test = pd.read_csv('banking_testing.csv')
 
 # Set up features and targets for prediction
-feature_cols = ['age', 'duration', 'campaign', 'pdays', 'previous']
 target_col = 'Final_Y'
+feature_cols = [
+    'age',
+    'duration',
+    'campaign',
+    'pdays',
+    'previous',
+    'emp.var.rate',
+    'cons.price.idx',
+    'cons.conf.idx',
+    'euribor3m',
+    'nr.employed'
+]
 
 # Build a decision tree from training data
 dt = decision_tree.build_tree(df_train[feature_cols], df_train[target_col])
