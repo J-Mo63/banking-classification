@@ -1,4 +1,5 @@
 # Import libraries
+from utils import pre_processing as prep
 from models import decision_tree
 import pandas as pd
 
@@ -8,26 +9,18 @@ df_test = pd.read_csv('banking_testing.csv')
 
 # Set up features and targets for prediction
 target_col = 'Final_Y'
-feature_cols = [
-    'age',
-    'duration',
-    'campaign',
-    'pdays',
-    'previous',
-    'emp.var.rate',
-    'cons.price.idx',
-    'cons.conf.idx',
-    'euribor3m',
-    'nr.employed'
-]
+
+# Process the data sets for use
+processed_train = prep.process_data(df_train)
+processed_test = prep.process_data(df_test)
 
 # Build a decision tree from training data
-dt = decision_tree.build_tree(df_train[feature_cols], df_train[target_col])
+dt = decision_tree.build_tree(processed_train, df_train[target_col])
 
 # Create a combined data frame for output of predictions
 output_df = pd.DataFrame({
     'row ID': df_test['row ID'],
-    'Final_Y': dt.predict(df_test[feature_cols]),
+    'Final_Y': dt.predict(processed_test)
 })
 
 # Write the data frame to a csv file
