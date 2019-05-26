@@ -1,2 +1,4 @@
+IPython
+pydotplus
 scikit-learn
 pandas
