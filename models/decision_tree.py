@@ -14,7 +14,7 @@ def build_tree(df_train, df_target):
         df_train, df_target, test_size=0.3, random_state=1)
 
     # Create a decision tree classifier that sorts??? by entropy and pre-prunes to a max depth
-    dt = DecisionTreeClassifier(criterion='entropy', max_depth=3)
+    dt = DecisionTreeClassifier(criterion='entropy', max_depth=5)
 
     # Train the decision tree based on features
     dt = dt.fit(train_features, train_targets)
