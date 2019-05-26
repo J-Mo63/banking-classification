@@ -13,15 +13,19 @@ def build_tree(df_train, df_target):
     train_features, test_features, train_targets, test_targets = train_test_split(
         df_train, df_target, test_size=0.3, random_state=1)
 
+    # Create a decision tree classifier that sorts??? by entropy and pre-prunes to a max depth
+    dt = DecisionTreeClassifier(criterion='entropy', max_depth=3)
+
     # Train the decision tree based on features
-    dt = DecisionTreeClassifier().fit(train_features, train_targets)
+    dt = dt.fit(train_features, train_targets)
 
     # Get predictions for testing features
     predictions = dt.predict(test_features)
 
     # Determine accuracy for testing targets and notify console
     accuracy = metrics.accuracy_score(test_targets, predictions)
-    print("Decision Tree Accuracy: " + "{0:.3%}".format(accuracy))
+    print('Decision Tree Accuracy: ' + '{0:.3%}'.format(accuracy))
+
     # Visualise the decision tree and export to png
     dot_data = StringIO()
     export_graphviz(dt, out_file=dot_data,
