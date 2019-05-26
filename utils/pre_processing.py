@@ -27,9 +27,6 @@ def process_data(df):
     # Perform binarisation for 'poutcome'
     binarised_poutcome = binarise_poutcome(df['poutcome'])
 
-    # Perform binarisation for 'day_of_week'
-    binarised_day = binarise_day(df['day_of_week'])
-
     # Perform binarisation for 'month'
     binarised_month = binarise_month(df['month'])
 
