@@ -35,7 +35,7 @@ def process_data(df):
         'age': df['age'],
         'duration': df['duration'],
         'campaign': df['campaign'],
-        'pdays': df['pdays'],
+        'pdays': df['pdays'], # Removing pdays decreases accuracy in real world
         'previous': df['previous'],
         'emp.var.rate': df['emp.var.rate'],
         'cons.price.idx': df['cons.price.idx'],
