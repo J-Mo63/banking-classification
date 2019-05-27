@@ -36,7 +36,7 @@ def process_data(df):
         'duration': df['duration'],
         'campaign': df['campaign'],
         'pdays': df['pdays'], # Removing pdays decreases accuracy in real world
-        'previous': df['previous'],
+        # 'previous': df['previous'],     removing days bumps by 0.061%
         'emp.var.rate': df['emp.var.rate'],
         'cons.price.idx': df['cons.price.idx'],
         'cons.conf.idx': df['cons.conf.idx'],
