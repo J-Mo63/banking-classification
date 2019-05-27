@@ -35,10 +35,10 @@ def process_data(df):
         'age': df['age'],
         'duration': df['duration'],
         'campaign': df['campaign'],
-        'pdays': df['pdays'], # Removing pdays decreases accuracy in real world
+        'pdays': df['pdays'],  # Removing pdays decreases accuracy in real world
         # 'previous': df['previous'],     removing days bumps by 0.061%
         'emp.var.rate': df['emp.var.rate'],
-        'cons.price.idx': df['cons.price.idx'], # Removing cons.price.idx decreases accuracy
+        'cons.price.idx': df['cons.price.idx'],  # Removing cons.price.idx decreases accuracy
         'cons.conf.idx': df['cons.conf.idx'],
         'euribor3m': df['euribor3m'],
         'nr.employed': df['nr.employed'],
@@ -56,13 +56,13 @@ def process_data(df):
         'Student': binarised_job['student'],
         'Technician': binarised_job['technician'],
         'Unemployed': binarised_job['unemployed'],
-        # 'Telephone': binarised_contact,     removing telephone makes not change
+        # 'Telephone': binarised_contact,     removing telephone makes no change
         'Default-Yes': binarised_default['yes'],
         'Default-No': binarised_default['no'],
         'Default-Unknown': binarised_default['unknown'],
-        'Housing-Yes': binarised_housing['yes'],
-        'Housing-No': binarised_housing['no'],
-        'Housing-Unknown': binarised_housing['unknown'],
+        # 'Housing-Yes': binarised_housing['yes'],   removing housing makes no change
+        # 'Housing-No': binarised_housing['no'],
+        # 'Housing-Unknown': binarised_housing['unknown'],
         'Loan-Yes': binarised_loan['yes'],
         'Loan-No': binarised_loan['no'],
         'Loan-Unknown': binarised_loan['unknown'],
