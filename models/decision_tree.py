@@ -6,6 +6,8 @@ from sklearn.tree import export_graphviz
 from io import StringIO
 from IPython.display import Image
 import pydotplus
+import matplotlib.pyplot as plt
+import scikitplot as skplt
 
 
 def build_tree(df_train, df_target):
@@ -35,6 +37,13 @@ def build_tree(df_train, df_target):
     graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
     graph.write_png('decision_tree.png')
     Image(graph.create_png())
+
+    # Generate an ROC curve from the predictions
+    predicted_probabilities = dt.predict_proba(test_features)
+    skplt.metrics.plot_roc(test_targets, predicted_probabilities,
+                           title='Decision Tree ROC by Class', cmap='tab10',
+                           plot_micro=False, plot_macro=False)
+    plt.show()
 
     # Return the generated decision tree
     return dt
