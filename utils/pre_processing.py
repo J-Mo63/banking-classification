@@ -56,7 +56,7 @@ def process_data(df):
         'Student': binarised_job['student'],
         'Technician': binarised_job['technician'],
         'Unemployed': binarised_job['unemployed'],
-        'Telephone': binarised_contact,
+        # 'Telephone': binarised_contact,     removing telephone makes not change
         'Default-Yes': binarised_default['yes'],
         'Default-No': binarised_default['no'],
         'Default-Unknown': binarised_default['unknown'],
