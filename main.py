@@ -1,5 +1,4 @@
 # Import libraries
-from utils import pre_processing as prep
 from models import decision_tree
 import pandas as pd
 
@@ -11,8 +10,8 @@ df_test = pd.read_csv('banking_testing.csv')
 target_col = 'Final_Y'
 
 # Process the data sets for use
-processed_train = prep.process_data(df_train)
-processed_test = prep.process_data(df_test)
+processed_train = decision_tree.process_data(df_train)
+processed_test = decision_tree.process_data(df_test)
 
 # Build a decision tree from training data
 dt = decision_tree.build_tree(processed_train, df_train[target_col])
