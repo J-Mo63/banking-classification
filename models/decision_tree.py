@@ -123,7 +123,7 @@ def process_data(df):
         # 'Wed': binarised_day['wednesday'],  removing days bumps by 0.01%
         # 'Thu': binarised_day['thursday'],
         # 'Fri': binarised_day['friday'],
-        'Mar': binarised_month['march'],
+        'Mar': binarised_month['march'],  # Removing months decreases accuracy
         'Apr': binarised_month['april'],
         'May': binarised_month['may'],
         'Jun': binarised_month['june'],
