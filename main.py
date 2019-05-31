@@ -10,11 +10,11 @@ df_test = pd.read_csv('banking_testing.csv')
 target_col = 'Final_Y'
 
 # Process the data sets for use
-processed_train = decision_tree.process_data(df_train)
-processed_test = decision_tree.process_data(df_test)
+processed_train = decision_tree.process_data(df_train, target_col, include_target=True)
+processed_test = decision_tree.process_data(df_test, target_col)
 
 # Build a decision tree from training data
-dt = decision_tree.build_tree(processed_train, df_train[target_col])
+dt = decision_tree.build_tree(processed_train.drop(['Final_Y'], axis=1), processed_train[target_col])
 
 # Create a combined data frame for output of predictions
 output_df = pd.DataFrame({

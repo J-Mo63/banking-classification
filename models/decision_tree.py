@@ -51,7 +51,7 @@ def build_tree(df_train, df_target):
     return dt
 
 
-def process_data(df):
+def process_data(df, target_col, include_target=False):
     # Perform binarisation for 'marital'
     binarised_marital = prep.binarise_marital(df['marital'])
 
@@ -80,7 +80,7 @@ def process_data(df):
     binarised_month = prep.binarise_month(df['month'])
 
     # Create a combined data frame of pre-processed data for analysis
-    return pd.DataFrame({
+    processed_df = pd.DataFrame({
         'age': df['age'],
         'duration': df['duration'],
         'campaign': df['campaign'],
@@ -142,3 +142,8 @@ def process_data(df):
         # 'university.degree': binarised_education['university.degree'],
         # 'unknown': binarised_education['unknown'],
     })
+
+    if include_target:
+        processed_df[target_col] = df[target_col]
+
+    return processed_df
