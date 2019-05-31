@@ -318,5 +318,6 @@ def binarise_month(df):
             'november': binarised_november_list,
             'december': binarised_december_list}
 
+
 def remove_target(df, target_col):
     return df.drop([target_col], axis=1)
