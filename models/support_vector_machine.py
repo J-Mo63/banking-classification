@@ -13,7 +13,7 @@ def build_svm(df_train, df_target):
         df_train, df_target, test_size=0.3, random_state=1)
 
     # Create an SVM Classifier
-    svm = support_vector_machine.SVC(kernel='poly', probability=True)
+    svm = support_vector_machine.SVC(kernel='linear', probability=True)
 
     # Train the model using the training sets
     svm.fit(train_features, train_targets)
