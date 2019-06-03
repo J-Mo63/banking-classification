@@ -12,7 +12,7 @@ from utils import pre_processing as prep
 import pandas as pd
 
 
-def build_tree(df_train, df_target):
+def build_dt(df_train, df_target):
     # Split the data into training and testing sets of features and targets
     train_features, test_features, train_targets, test_targets = train_test_split(
         df_train, df_target, test_size=0.3, random_state=1)
