@@ -1,10 +1,7 @@
 from sklearn.model_selection import train_test_split
-from sklearn import metrics
 from sklearn import svm as support_vector_machine
-import scikitplot as skplt
-import matplotlib.pyplot as plt
 import pandas as pd
-from utils import pre_processing as prep
+from utils import pre_processing as prep, classification_helper as clf_helper
 
 
 def build_svm(df_train, df_target):
@@ -22,15 +19,10 @@ def build_svm(df_train, df_target):
     predictions = svm.predict(test_features)
 
     # Determine accuracy for testing targets and notify console
-    accuracy = metrics.accuracy_score(test_targets, predictions)
-    print('Support Vector Machine Accuracy: ' + '{0:.3%}'.format(accuracy))
+    clf_helper.display_accuracy(test_targets, predictions, name='Support Vector Machine')
 
     # Generate an ROC curve from the predictions
-    predicted_probabilities = svm.predict_proba(test_features)
-    skplt.metrics.plot_roc(test_targets, predicted_probabilities,
-                           title='Support Vector Machine ROC by Class', cmap='tab10',
-                           plot_micro=False, plot_macro=False)
-    plt.show()
+    clf_helper.generate_roc(svm, test_features, test_targets, name='Support Vector Machine')
 
     # Return the generated decision tree
     return svm

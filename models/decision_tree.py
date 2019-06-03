@@ -1,14 +1,11 @@
 # Import libraries
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
-from sklearn import metrics
 from sklearn.tree import export_graphviz
 from io import StringIO
 from IPython.display import Image
 import pydotplus
-import matplotlib.pyplot as plt
-import scikitplot as skplt
-from utils import pre_processing as prep
+from utils import pre_processing as prep, classification_helper as clf_helper
 import pandas as pd
 
 
@@ -27,8 +24,10 @@ def build_dt(df_train, df_target):
     predictions = dt.predict(test_features)
 
     # Determine accuracy for testing targets and notify console
-    accuracy = metrics.accuracy_score(test_targets, predictions)
-    print('Decision Tree Accuracy: ' + '{0:.3%}'.format(accuracy))
+    clf_helper.display_accuracy(test_targets, predictions, name='Decision Tree')
+
+    # Generate an ROC curve from the predictions
+    clf_helper.generate_roc(dt, test_features, test_targets, name='Decision Tree')
 
     # Visualise the decision tree and export to png
     dot_data = StringIO()
@@ -39,13 +38,6 @@ def build_dt(df_train, df_target):
     graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
     graph.write_png('decision_tree.png')
     Image(graph.create_png())
-
-    # Generate an ROC curve from the predictions
-    predicted_probabilities = dt.predict_proba(test_features)
-    skplt.metrics.plot_roc(test_targets, predicted_probabilities,
-                           title='Decision Tree ROC by Class', cmap='tab10',
-                           plot_micro=False, plot_macro=False)
-    plt.show()
 
     # Return the generated decision tree
     return dt
