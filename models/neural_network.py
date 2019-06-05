@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import pandas as pd
 from utils import pre_processing as prep
@@ -6,11 +7,11 @@ from pandas import get_dummies
 from sklearn.model_selection import train_test_split
 
 
-def build_nn(df_train, df_target):
+def build_nn_manual(df_train, df_target):
     data = pd.concat([df_train, df_target], axis=1)
     cols = data.columns
-    features = cols[0:4]
-    labels = cols[4]
+    features = cols[0:18]
+    labels = cols[18]
     print(features)
     print(labels)
 
@@ -36,7 +37,7 @@ def build_nn(df_train, df_target):
     X = data_norm.reindex(indices)[features]
     y = data_norm.reindex(indices)[labels]
 
-    # One Hot Encode as a dataframe
+    # One Hot Encode as a data frame
     y = get_dummies(y)
 
     # Generate Training and Validation Sets
@@ -54,7 +55,7 @@ def build_nn(df_train, df_target):
 
     training_size = X_train.shape[1]
     test_size = X_test.shape[1]
-    num_features = 4
+    num_features = 18
     num_labels = 2
 
     num_hidden = 10
@@ -68,11 +69,11 @@ def build_nn(df_train, df_target):
         print(tf_train_set)
         print(tf_train_labels)
 
-        ## Note, since there is only 1 layer there are actually no hidden layers... but if there were
-        ## there would be num_hidden
+        # Note, since there is only 1 layer there are actually no hidden layers... but if there were
+        # there would be num_hidden
         weights_1 = tf.Variable(tf.truncated_normal([num_features, num_hidden]))
         weights_2 = tf.Variable(tf.truncated_normal([num_hidden, num_labels]))
-        ## tf.zeros Automaticaly adjusts rows to input data batch size
+        # tf.zeros Automaticaly adjusts rows to input data batch size
         bias_1 = tf.Variable(tf.zeros([num_hidden]))
         bias_2 = tf.Variable(tf.zeros([num_labels]))
 
@@ -83,7 +84,7 @@ def build_nn(df_train, df_target):
         loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=logits_2, labels=tf_train_labels))
         optimizer = tf.train.GradientDescentOptimizer(.005).minimize(loss)
 
-        ## Training prediction
+        # Training prediction
         predict_train = tf.nn.softmax(logits_2)
 
         # Validation prediction
@@ -92,22 +93,100 @@ def build_nn(df_train, df_target):
         logits_2_val = tf.matmul(rel_1_val, weights_2) + bias_2
         predict_valid = tf.nn.softmax(logits_2_val)
 
-        def accuracy(predictions, labels):
-            return (100.0 * np.sum(np.argmax(predictions, 1) == np.argmax(labels, 1))
-                    / predictions.shape[0])
-
-        num_steps = 10000
+        num_steps = 10001
         with tf.Session(graph=graph) as session:
             tf.initialize_all_variables().run()
             print(loss.eval())
             for step in range(num_steps):
                 _, l, predictions = session.run([optimizer, loss, predict_train])
 
-                if (step % 2000 == 0):
+                sys.stdout.write('\r' + 'Training Model: ' + '{0:.0%}'.format(step/num_steps))
+
+                if step % 2000 == 0:
                     # print(predictions[3:6])
-                    print('Loss at step %d: %f' % (step, l))
+                    print('\nLoss at step %d: %f' % (step, l))
                     print('Training accuracy: %.1f%%' % accuracy(predictions, y_train[:, :]))
-                    print('Validation accuracy: %.1f%%' % accuracy(predict_valid.eval(), y_test))
+                    print('Validation accuracy: %.1f%%\n' % accuracy(predict_valid.eval(), y_test))
+
+
+def build_nn(df_train, df_target):
+    train_features, test_features, train_targets, test_targets = train_test_split(
+        df_train, df_target, test_size=0.3, random_state=1)
+
+    # Normalise all feature values
+    train_features = z_score(train_features)
+    test_features = z_score(test_features)
+
+    # Describe the network inputs
+    input_columns = []
+    for key in train_features.keys():
+        input_columns.append(tf.feature_column.numeric_column(key=key))
+
+    # Build a deep neural network to predict classes over hidden layers
+    nn = tf.estimator.DNNClassifier(
+        feature_columns=input_columns,
+        n_classes=2, hidden_units=[10, 10])  # Two hidden layers of 10 nodes each
+
+    # Set a standard batch size for processing
+    batch_size = 32
+
+    # Train the model over a number of iterations
+    nn.train(
+        input_fn=lambda: train_input_fn(train_features, train_targets, batch_size),
+        steps=5000)
+
+    # Evaluate the model on the test data
+    eval_result = nn.evaluate(
+        input_fn=lambda: pred_input_fn(test_features, test_targets, batch_size))
+
+    # Display the accuracy on the test set
+    print('Test set accuracy: {accuracy:0.3%}'.format(**eval_result))
+
+    return nn
+
+
+def predict(nn, data):
+    # Set a standard batch size for processing
+    batch_size = 32
+
+    # Normalise all feature values
+    data = z_score(data)
+
+    # Get predictions for the provided data
+    pred_results = nn.predict(
+        input_fn=lambda: pred_input_fn(data, None, batch_size))
+
+    # Extract predictions from the generator object
+    predictions = []
+    for i in range(len(data)):
+        predictions.append(next(pred_results)['class_ids'][0])
+
+    # Return a numpy array of predictions
+    return np.array(predictions)
+
+
+def train_input_fn(features, targets, batch_size):
+    # Format the io dataset from features and targets
+    dataset = tf.data.Dataset.from_tensor_slices((dict(features), targets))
+
+    # Shuffle, repeat, and batch the data
+    return dataset.shuffle(1000).repeat().batch(batch_size)
+
+
+def pred_input_fn(features, targets, batch_size):
+    # Format the data based on provided attributes
+    features = dict(features)
+    if targets is None:
+        inputs = features
+    else:
+        inputs = (features, targets)
+
+    # Format the io dataset from features and targets
+    dataset = tf.data.Dataset.from_tensor_slices(inputs)
+
+    # Batch and return the data
+    return dataset.batch(batch_size)
+
 
 def process_data(df, target_col, include_target=False):
     # Perform binarisation for 'marital'
@@ -143,12 +222,12 @@ def process_data(df, target_col, include_target=False):
         'duration': df['duration'],
         'campaign': df['campaign'],
         'pdays': df['pdays'],  # Removing pdays decreases accuracy in real world
-        # 'previous': df['previous'],     removing days bumps by 0.061%
-        # 'emp.var.rate': df['emp.var.rate'],
-        # 'cons.price.idx': df['cons.price.idx'],  # Removing cons.price.idx decreases accuracy
-        # 'cons.conf.idx': df['cons.conf.idx'],
-        # 'euribor3m': df['euribor3m'],
-        # 'nr.employed': df['nr.employed'],
+        'previous': df['previous'],
+        'emp.var.rate': df['emp.var.rate'],
+        'cons.price.idx': df['cons.price.idx'],  # Removing cons.price.idx decreases accuracy
+        'cons.conf.idx': df['cons.conf.idx'],
+        'euribor3m': df['euribor3m'],
+        'nr.employed': df['nr.employed'],
         # 'Married': binarised_marital['married'],
         # 'Single': binarised_marital['single'],
         # 'Divorced': binarised_marital['divorced'],
@@ -205,3 +284,18 @@ def process_data(df, target_col, include_target=False):
         processed_df[target_col] = df[target_col]
 
     return processed_df
+
+
+def accuracy(predictions, labels):
+    return (100.0 * np.sum(np.argmax(predictions, 1) == np.argmax(labels, 1))
+            / predictions.shape[0])
+
+
+def z_score(data):
+    # Disable pandas chained assignment warnings
+    pd.options.mode.chained_assignment = None
+
+    # Divide the mean-negated value by the set's standard deviation
+    for feature in data:
+        data[feature] = (data[feature] - data[feature].mean()) / data[feature].std()
+    return data
