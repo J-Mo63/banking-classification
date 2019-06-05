@@ -1,5 +1,13 @@
 import pandas as pd
 from sklearn import preprocessing
+import numpy as np
+from scipy import stats
+
+
+def remove_outliers(df):
+    # Get the indexes of all items within bounds
+    idx = np.all(stats.zscore(df) < 3, axis=1)
+    return df.loc[idx]
 
 
 def bin_equi_width(df, bins):
