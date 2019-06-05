@@ -125,7 +125,7 @@ def build_nn(df_train, df_target):
     # Build a deep neural network to predict classes over hidden layers
     nn = tf.estimator.DNNClassifier(
         feature_columns=input_columns,
-        n_classes=2, hidden_units=[10, 10])  # Two hidden layers of 10 nodes each
+        n_classes=2, hidden_units=[10, 10, 10])  # Three hidden layers of 10 nodes each
 
     # Set a standard batch size for processing
     batch_size = 32
@@ -133,7 +133,7 @@ def build_nn(df_train, df_target):
     # Train the model over a number of iterations
     nn.train(
         input_fn=lambda: train_input_fn(train_features, train_targets, batch_size),
-        steps=5000)
+        steps=10000)  # 10k iterations for training
 
     # Evaluate the model on the test data
     eval_result = nn.evaluate(
@@ -221,10 +221,10 @@ def process_data(df, target_col, include_target=False):
         'age': df['age'],
         'duration': df['duration'],
         'campaign': df['campaign'],
-        'pdays': df['pdays'],  # Removing pdays decreases accuracy in real world
+        'pdays': df['pdays'],
         'previous': df['previous'],
         'emp.var.rate': df['emp.var.rate'],
-        'cons.price.idx': df['cons.price.idx'],  # Removing cons.price.idx decreases accuracy
+        'cons.price.idx': df['cons.price.idx'],
         'cons.conf.idx': df['cons.conf.idx'],
         'euribor3m': df['euribor3m'],
         'nr.employed': df['nr.employed'],
@@ -242,25 +242,25 @@ def process_data(df, target_col, include_target=False):
         # 'Student': binarised_job['student'],
         # 'Technician': binarised_job['technician'],
         # 'Unemployed': binarised_job['unemployed'],
-        # # 'Telephone': binarised_contact,     removing telephone makes no change
+        # 'Telephone': binarised_contact,
         # 'Default-Yes': binarised_default['yes'],
         # 'Default-No': binarised_default['no'],
         # 'Default-Unknown': binarised_default['unknown'],
-        # # 'Housing-Yes': binarised_housing['yes'],   removing housing makes no change
-        # # 'Housing-No': binarised_housing['no'],
-        # # 'Housing-Unknown': binarised_housing['unknown'],
+        # 'Housing-Yes': binarised_housing['yes'],
+        # 'Housing-No': binarised_housing['no'],
+        # 'Housing-Unknown': binarised_housing['unknown'],
         # 'Loan-Yes': binarised_loan['yes'],
         # 'Loan-No': binarised_loan['no'],
         # 'Loan-Unknown': binarised_loan['unknown'],
-        # 'Previous Success': binarised_poutcome['success'],
-        # 'Previous Failure': binarised_poutcome['failure'],
-        # 'No Previous Contact': binarised_poutcome['nonexistent'],
-        # # 'Mon': binarised_day['monday'],
-        # # 'Tue': binarised_day['tuesday'],
-        # # 'Wed': binarised_day['wednesday'],  removing days bumps by 0.01%
-        # # 'Thu': binarised_day['thursday'],
-        # # 'Fri': binarised_day['friday'],
-        # 'Mar': binarised_month['march'],  # Removing months decreases accuracy
+        # 'Previous-Success': binarised_poutcome['success'],
+        # 'Previous-Failure': binarised_poutcome['failure'],
+        # 'No-Previous-Contact': binarised_poutcome['nonexistent'],
+        # 'Mon': binarised_day['monday'],
+        # 'Tue': binarised_day['tuesday'],
+        # 'Wed': binarised_day['wednesday'],
+        # 'Thu': binarised_day['thursday'],
+        # 'Fri': binarised_day['friday'],
+        # 'Mar': binarised_month['march'],
         # 'Apr': binarised_month['april'],
         # 'May': binarised_month['may'],
         # 'Jun': binarised_month['june'],
@@ -270,14 +270,14 @@ def process_data(df, target_col, include_target=False):
         # 'Oct': binarised_month['october'],
         # 'Nov': binarised_month['november'],
         # 'Dec': binarised_month['december'],
-        # # 'basic.4y': binarised_education['basic.4y'],
-        # # 'basic.6y': binarised_education['basic.6y'],
-        # # 'basic.9y': binarised_education['basic.9y'], removing education bumps by 0.024%
-        # # 'high.school': binarised_education['high.school'],
-        # # 'illiterate': binarised_education['illiterate'],
-        # # 'professional.course': binarised_education['professional.course'],
-        # # 'university.degree': binarised_education['university.degree'],
-        # # 'unknown': binarised_education['unknown'],
+        # 'basic.4y': binarised_education['basic.4y'],
+        # 'basic.6y': binarised_education['basic.6y'],
+        # 'basic.9y': binarised_education['basic.9y'],
+        # 'high.school': binarised_education['high.school'],
+        # 'illiterate': binarised_education['illiterate'],
+        # 'professional.course': binarised_education['professional.course'],
+        # 'university.degree': binarised_education['university.degree'],
+        # 'unknown': binarised_education['unknown'],
     })
 
     if include_target:
@@ -287,6 +287,7 @@ def process_data(df, target_col, include_target=False):
 
 
 def accuracy(predictions, labels):
+    # Return the computed accuracy for a set of predictions
     return (100.0 * np.sum(np.argmax(predictions, 1) == np.argmax(labels, 1))
             / predictions.shape[0])
 
