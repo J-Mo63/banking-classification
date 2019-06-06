@@ -4,6 +4,10 @@ import numpy as np
 from scipy import stats
 
 
+def remove_by_value(df, value):
+    return df.replace(to_replace=value, value=np.nan).dropna()
+
+
 def remove_outliers(df):
     # Get the indexes of all items within bounds
     idx = np.all(stats.zscore(df) < 3, axis=1)
