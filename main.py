@@ -19,8 +19,6 @@ target_col = 'Final_Y'
 # processed_train = decision_tree.process_data(df_train, target_col, include_target=True)
 # processed_test = decision_tree.process_data(df_test, target_col)
 #
-# # processed_train = processed_train[(np.abs(stats.zscore(processed_train)) < 3).all(axis=1)]
-#
 # # Build a decision tree from training data
 # clf = decision_tree.build_dt(
 #     prep.remove_target(processed_train, target_col),
@@ -44,11 +42,14 @@ target_col = 'Final_Y'
 
 
 # Process the data sets for use
-formatted_train = neural_network.process_data(df_train, target_col, include_target=True)
-formatted_test = neural_network.process_data(df_test, target_col)
+processed_train = neural_network.process_data(df_train, target_col, include_target=True)
+processed_test = neural_network.process_data(df_test, target_col)
+
+# Remove all rows with unknown features
+# processed_train = prep.remove_by_value(processed_train, 'unknown')
 
 # Remove all outlier values from the data frame
-processed_train = prep.remove_outliers(formatted_train)
+processed_train = prep.remove_outliers(processed_train)
 
 # Build a neural network from training data
 clf = neural_network.build_nn(
@@ -62,7 +63,8 @@ clf = neural_network.build_nn(
 # Create a combined data frame for output of predictions
 output_df = pd.DataFrame({
     'row ID': df_test['row ID'],
-    'Final_Y': neural_network.predict(clf, formatted_test)
+    # 'Final_Y': clf.predict(processed_test)
+    'Final_Y': neural_network.predict(clf, processed_test)
     # 'Final_Y': vclf.get_vote()
 })
 
