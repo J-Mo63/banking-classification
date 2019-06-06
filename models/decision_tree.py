@@ -47,20 +47,11 @@ def process_data(df, target_col, include_target=False):
     # Perform binarisation for 'marital'
     binarised_marital = prep.binarise_marital(df['marital'])
 
-    # Perform binarisation for 'contact'
-    binarised_contact = prep.binarise_contact(df['contact'])
-
     # Perform binarisation for 'job'
     binarised_job = prep.binarise_job(df['job'])
 
-    # Perform binarisation for 'education'
-    binarised_education = prep.binarise_education(df['education'])
-
     # Perform binarisation for 'default'
     binarised_default = prep.binarise_y_n_u(df['default'])
-
-    # Perform binarisation for 'housing'
-    binarised_housing = prep.binarise_y_n_u(df['housing'])
 
     # Perform binarisation for 'loan'
     binarised_loan = prep.binarise_y_n_u(df['loan'])
