@@ -140,7 +140,7 @@ def build_nn(df_train, df_target):
         input_fn=lambda: pred_input_fn(test_features, test_targets, batch_size))
 
     # Display the accuracy on the test set
-    print('Test set accuracy: {accuracy:0.3%}'.format(**eval_result))
+    print('Neural Network Accuracy: {accuracy:0.3%}'.format(**eval_result))
 
     return nn
 
